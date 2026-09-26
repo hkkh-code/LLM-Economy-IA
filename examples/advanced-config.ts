@@ -1,51 +1,43 @@
-/**
- * @file Advanced configuration example
- * Shows all configuration options
- */
+// advanced-config.ts
+// Shows all the configuration options available
 
 import { AiGatewayService } from '@deepseek-ai/dsh-experimental-ai-gateway';
 
 async function main() {
+  // This is pretty much every option
   const gateway = new AiGatewayService({
-    // Optimization profile
-    optimizationProfile: 'tokenSaver',
+    optimizationProfile: 'tokenSaver',  // pick your profile
     
-    // Cache settings
+    // caching
     enableCache: true,
-    cacheTTL: 600000,        // 10 minutes
-    cacheStrategy: 'lfu',    // Least Frequently Used
+    cacheTTL: 600000,
+    cacheStrategy: 'lfu',
     
-    // Token budgets
+    // token budgets - adjust based on your typical usage
     tokenBudget: {
-      input: 200000,         // 200K input tokens
-      output: 50000,         // 50K output tokens
-      context: 100000,       // 100K context tokens
-      reserved: 10000,       // 10K reserved buffer
-      emergency: 20000       // 20K emergency pool
+      input: 200000,
+      output: 50000,
+      context: 100000,
+      reserved: 10000,   // safety buffer
+      emergency: 20000   // only used if everything else fails
     },
     
-    // Retry configuration
+    // retry stuff
     retry: {
       maxRetries: 5,
       initialDelayMs: 2000,
       maxDelayMs: 60000,
       backoffMultiplier: 2.5,
-      jitterRatio: 0.3       // 30% jitter
+      jitterRatio: 0.3
     },
     
-    // Rate limit handling
-    cooldownDurationMs: 120000,  // 2 minutes
+    cooldownDurationMs: 120000,  // wait 2min after rate limit
     
-    // Auto-switch features
     enableAutoSwitch: true,
     maxKeysPerProvider: 10
   });
 
-  console.log('Advanced configuration loaded');
-  console.log('Profile: tokenSaver (maximum token savings)');
-  console.log('Cache: LFU strategy, 10 min TTL');
-  console.log('Budget: 200K input, 50K output, 100K context');
-  console.log('Retry: 5 max, 2-60s delays, 2.5x backoff');
+  console.log('Config loaded. Profile: tokenSaver');
 }
 
 main().catch(console.error);

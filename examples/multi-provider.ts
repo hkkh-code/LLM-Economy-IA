@@ -1,7 +1,5 @@
-/**
- * @file Multi-provider example
- * Demonstrates fallback between multiple AI providers
- */
+// multi-provider.ts
+// Example showing how to use multiple AI providers with automatic fallback
 
 import { 
   ProviderManager,
@@ -14,7 +12,8 @@ async function main() {
   const fallbackManager = new FallbackManager();
   const keyManager = new ApiKeyManager(true, 10);
 
-  // Register DeepSeek as primary
+  // Add your providers here
+  // DeepSeek as primary
   providerManager.registerProvider({
     id: 'deepseek',
     name: 'DeepSeek',
@@ -25,7 +24,7 @@ async function main() {
     retryPolicy: { mode: 'normal', eligibleCodes: [] }
   });
 
-  // Register OpenAI as secondary
+  // OpenAI as backup
   providerManager.registerProvider({
     id: 'openai',
     name: 'OpenAI',
@@ -36,7 +35,7 @@ async function main() {
     retryPolicy: { mode: 'normal', eligibleCodes: [] }
   });
 
-  // Register Anthropic as fallback
+  // Anthropic as last resort
   providerManager.registerProvider({
     id: 'anthropic',
     name: 'Anthropic',
@@ -47,45 +46,41 @@ async function main() {
     retryPolicy: { mode: 'normal', eligibleCodes: [] }
   });
 
-  // Configure fallback chain: DeepSeek -> OpenAI -> Anthropic
+  // Set up the fallback order: try DeepSeek, then OpenAI, then Anthropic
   fallbackManager.registerChain('production', {
     name: 'production',
     providers: ['deepseek', 'openai', 'anthropic']
   });
 
-  // Simulate a request with automatic fallback
+  // Make a request with automatic fallback
   const result = await fallbackManager.executeWithFallback(
     async (providerId) => {
-      console.log(`Trying provider: ${providerId}`);
+      console.log(`Trying ${providerId}...`);
       
       const provider = providerManager.getProvider(providerId);
-      if (!provider) {
-        throw new Error(`Provider ${providerId} not found`);
-      }
+      if (!provider) throw new Error(`No provider ${providerId}`);
 
-      // In real usage, make actual API call here
+      // In real code, make your API call here
+      // For demo, just fail on first provider
       if (providerId === 'deepseek') {
-        // Simulate failure
-        throw new Error('Simulated DeepSeek failure');
+        throw new Error('Simulated error');
       }
 
-      // Success on OpenAI
       return {
         provider: providerId,
         model: provider.models[0],
-        response: 'Hello! How can I help you?'
+        response: 'Hello!'
       };
     },
     'production'
   );
 
   if (result.success) {
-    console.log(`\n✓ Request successful on provider: ${result.usedProvider}`);
-    console.log(`  Model: ${result.result.model}`);
-    console.log(`  Response: ${result.result.response}`);
-    console.log(`  Total fallbacks: ${result.totalFallbacks}`);
+    console.log(`Success on ${result.usedProvider}`);
+    console.log(`Model: ${result.result.model}`);
+    console.log(`Response: ${result.result.response}`);
   } else {
-    console.error(`\n✗ All providers failed after ${result.attempts.length} attempts`);
+    console.log(`All providers failed after ${result.attempts.length} tries`);
   }
 }
 

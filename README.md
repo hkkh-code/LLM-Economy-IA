@@ -1,93 +1,55 @@
-# 🚀 Harness Economy - AI Gateway System
+# Harness Economy
 
-**Système complet de Token Economy + AutoSwitch API intelligent pour optimiser l'utilisation des modèles d'IA**
+> A simple token economy and auto-switch system for AI models
 
-## 📋 Description
+I built this because I was tired of hitting rate limits and wasting tokens. It's a modular system that helps optimize AI model usage automatically.
 
-Harness Economy est un système modulaire qui optimise automatiquement l'utilisation des modèles d'IA en:
-- **Économisant les tokens** via l'optimisation du contexte et des prompts
-- **Évitant les erreurs** de quota, rate limit et dépassement de tokens
-- **Maximisant la disponibilité** via la rotation automatique des clés API et le fallback entre providers
+## What it does
 
-## 🏗️ Architecture
+- Saves tokens by optimizing context and prompts
+- Avoids rate limit errors with smart cooldown handling
+- Rotates API keys automatically when needed
+- Falls back to different providers if one fails
+
+## How it works
+
+The system is split into small modules that each do one thing:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    AI GATEWAY ORCHESTRATOR                   │
-└─────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│ Token Manager │   │ Cache Manager │   │ Retry Manager │
-│  - Budgets    │   │  - LRU/FIFO   │   │  - Backoff    │
-│  - Tracking   │   │  - TTL        │   │  - Jitter     │
-└───────────────┘   └───────────────┘   └───────────────┘
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│ API Key Mgr   │   │ Rate Limit    │   │ Provider Mgr  │
-│  - Rotation   │   │  - Cooldown   │   │  - Load Bal.  │
-│  - Scoring    │   │  - Detection  │   │  - Health     │
-└───────────────┘   └───────────────┘   └───────────────┘
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│Context Optim. │   │ Prompt Optim. │   │ Fallback Mgr  │
-│  - Chunking   │   │  - Dedup      │   │  - Chains     │
-│  - Priority   │   │  - Reduction  │   │  - Auto-Switch│
-└───────────────┘   └───────────────┘   └───────────────┘
-        │                     │                     │
-        └─────────────────────┼─────────────────────┘
-                              ▼
-                    ┌───────────────┐
-                    │ Usage Tracker │
-                    │  + Admin UI   │
-                    └───────────────┘
+Your App
+    ↓
+AI Gateway (main orchestrator)
+    ↓
+├── Token Manager (track budgets)
+├── Context Optimizer (compress context)
+├── Prompt Optimizer (reduce prompt size)
+├── Cache Manager (avoid duplicate requests)
+├── API Key Manager (rotate keys)
+├── Rate Limit Manager (handle 429 errors)
+├── Retry Manager (exponential backoff)
+├── Provider Manager (multi-provider support)
+├── Fallback Manager (auto-failover)
+├── Usage Tracker (stats & metrics)
+└── Logging Manager (debug logs)
 ```
 
-## 📦 Modules
-
-| Module | Rôle | Fonctionnalités clés |
-|--------|------|----------------------|
-| **token-manager** | Gestion des budgets | Budgets input/output/context, profils d'économie, tracking temps réel |
-| **context-optimizer** | Optimisation du contexte | Chunking intelligent, priorisation, compression configurable |
-| **prompt-optimizer** | Optimisation des prompts | Déduplication, normalisation, réduction de tokens |
-| **cache-manager** | Cache des réponses | LRU/FIFO/LFU, TTL configurable, statistiques de hits |
-| **api-key-manager** | Rotation des clés | Scoring automatique, rotation intelligente, cooldown |
-| **rate-limit-manager** | Gestion des limites | Détection 429, cooldown préventif, retry-after |
-| **retry-manager** | Retry intelligent | Exponential backoff, jitter, codes retryables |
-| **provider-manager** | Multi-provider | Load balancing, health checks, selection par modèle |
-| **fallback-manager** | Failover automatique | Chaînes de fallback, basculement transparent |
-| **usage-tracker** | Statistiques | Métriques temps réel, historique, économies réalisées |
-| **logging-manager** | Logs structurés | Niveaux configurables, export, debugging |
-| **admin-ui** | Interface admin | Dashboard, alertes, monitoring temps réel |
-
-## ⚡ Installation
+## Quick start
 
 ```bash
-# Cloner le repository
-git clone https://github.com/votre-repo/Harness-Economy.git
-cd Harness-Economy
-
-# Installer les dépendances (si utilisé dans DeepSeek Harness)
+git clone https://github.com/hkkh-code/LLM-Economy-IA.git
+cd LLM-Economy-IA
 pnpm install
-
-# Builder les modules
 pnpm run build
 ```
 
-## 🚀 Utilisation rapide
+Basic usage:
 
 ```typescript
 import { AiGatewayService } from '@deepseek-ai/dsh-experimental-ai-gateway';
 
-// Configuration
 const gateway = new AiGatewayService({
-  optimizationProfile: 'balanced',  // performance | balanced | tokenSaver | ultraSaver
+  optimizationProfile: 'balanced',
   enableCache: true,
-  cacheTTL: 300000,
   tokenBudget: {
     input: 100000,
     output: 30000,
@@ -95,38 +57,48 @@ const gateway = new AiGatewayService({
     reserved: 5000,
     emergency: 10000,
   },
-  retry: {
-    maxRetries: 3,
-    initialDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
-    jitterRatio: 0.2,
-  },
 });
 
-// Montage dans le contexte Cordis
 gateway.mount(ctx);
 
-// Les requêtes sont automatiquement optimisées
+// That's it - requests are now automatically optimized
 const response = await ctx.llm.stream({
   prompt: "Your prompt here",
   model: "deepseek-chat",
 });
 ```
 
-## 📊 Profils d'optimisation
+## Modules
 
-| Profil | Utilisation | Économies | Réserve d'urgence |
-|--------|------------|-----------|-------------------|
-| `performance` | Priorité vitesse | ~10% | 5% |
-| `balanced` | Équilibré | ~25% | 10% |
-| `tokenSaver` | Économie tokens | ~40% | 15% |
-| `ultraSaver` | Maximum d'économies | ~60% | 20% |
+Each module is in its own package under `ai-gateway/`:
 
-## 🔧 Configuration avancée
+- `token-manager` - Budget tracking and enforcement
+- `context-optimizer` - Compress context by chunking and prioritizing
+- `prompt-optimizer` - Remove duplicate/redundant text from prompts
+- `cache-manager` - Cache responses with LRU/FIFO/LFU strategies
+- `api-key-manager` - Rotate API keys and track their health
+- `rate-limit-manager` - Handle 429 errors and cooldown periods
+- `retry-manager` - Exponential backoff with jitter
+- `provider-manager` - Manage multiple AI providers
+- `fallback-manager` - Automatic failover between providers
+- `usage-tracker` - Track token usage and savings
+- `logging-manager` - Structured logging for debugging
+- `admin-ui` - Simple admin interface for monitoring
+
+## Optimization profiles
+
+I added 4 profiles that tune how aggressive the optimization is:
+
+- `performance` - Speed over savings (~10% token reduction)
+- `balanced` - Middle ground (~25% reduction)
+- `tokenSaver` - Prioritize savings (~40% reduction)
+- `ultraSaver` - Maximum savings (~60% reduction)
+
+Pick based on your needs. I usually use `balanced` for dev and `tokenSaver` for production.
+
+## Full config example
 
 ```yaml
-# cordis.yml
 - name: '@deepseek-ai/dsh-experimental-ai-gateway'
   config:
     optimizationProfile: balanced
@@ -150,80 +122,61 @@ const response = await ctx.llm.stream({
     maxKeysPerProvider: 5
 ```
 
-## 📈 Monitoring
+Check `docs/CONFIGURATION.md` for all options.
+
+## Monitoring
 
 ```typescript
-// Statistiques d'utilisation
 const stats = usageTracker.getStats();
-console.log(`
-  Tokens utilisés aujourd'hui: ${stats.tokensUsedToday}
-  Tokens économisés: ${stats.tokensSavedToday}
-  Économie: ${stats.savingPercentage}%
-  Requêtes: ${stats.requestsToday}
-  Taux de succès: ${(stats.successfulRequests / stats.requestsToday * 100).toFixed(2)}%
-  Cache hit rate: ${(stats.cacheHits / (stats.cacheHits + stats.cacheMisses) * 100).toFixed(2)}%
-`);
 
-// Dashboard admin
-const dashboard = adminUI.getDashboardData();
+console.log(`Tokens used today: ${stats.tokensUsedToday}`);
+console.log(`Tokens saved: ${stats.tokensSavedToday}`);
+console.log(`Savings: ${stats.savingPercentage}%`);
+console.log(`Cache hit rate: ${(stats.cacheHits / (stats.cacheHits + stats.cacheMisses) * 100).toFixed(1)}%`);
 ```
 
-## 🧪 Tests
+See `examples/monitoring.ts` for more.
+
+## Project structure
+
+```
+ai-gateway/
+├── ai-gateway/          # Main orchestrator
+├── token-manager/       # Token budget tracking
+├── context-optimizer/   # Context compression
+├── prompt-optimizer/    # Prompt reduction
+├── cache-manager/       # Response caching
+├── api-key-manager/     # Key rotation
+├── rate-limit-manager/  # Rate limit handling
+├── retry-manager/       # Retry with backoff
+├── provider-manager/    # Multi-provider support
+├── fallback-manager/    # Auto-failover
+├── usage-tracker/       # Usage stats
+├── logging-manager/     # Debug logging
+└── admin-ui/            # Admin interface
+```
+
+## Running tests
 
 ```bash
-# Tests unitaires
 pnpm run test
-
-# Tests avec couverture
-pnpm run test:coverage
-
-# Tests e2e (nécessite DEEPSEEK_API_KEY)
-pnpm run test:e2e
+pnpm run test:coverage  # with coverage report
 ```
 
-## 📁 Structure du projet
+## Contributing
 
-```
-Harness-Economy/
-├── README.md                          # Ce fichier
-├── ai-gateway/                        # Code source des modules
-│   ├── ai-gateway/                    # Orchestrateur principal
-│   ├── token-manager/                 # Gestion tokens
-│   ├── context-optimizer/             # Optimisation contexte
-│   ├── prompt-optimizer/              # Optimisation prompts
-│   ├── cache-manager/                 # Cache
-│   ├── api-key-manager/               # Rotation clés API
-│   ├── rate-limit-manager/            # Gestion rate limits
-│   ├── retry-manager/                 # Retry
-│   ├── provider-manager/              # Multi-provider
-│   ├── fallback-manager/              # Fallback
-│   ├── usage-tracker/                 # Statistiques
-│   ├── logging-manager/               # Logs
-│   └── admin-ui/                      # Interface admin
-├── docs/                              # Documentation
-│   ├── API.md                         # Référence API
-│   ├── CONFIGURATION.md               # Guide de configuration
-│   └── EXAMPLES.md                    # Exemples d'utilisation
-└── examples/                          # Exemples de code
-    ├── basic-usage.ts
-    ├── advanced-config.ts
-    └── custom-profile.ts
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## 🤝 Contribution
+## License
 
-Les contributions sont les bienvenues! Voir [CONTRIBUTING.md](CONTRIBUTING.md)
+MIT - do whatever you want with it.
 
-## 📄 License
-
-MIT License - voir [LICENSE](LICENSE)
-
-## 🔗 Liens
+## Links
 
 - [DeepSeek Harness](https://github.com/deepseek-ai/harness)
-- [Documentation Cordis](https://cordis.js.org)
+- [Cordis docs](https://cordis.js.org)
 - [DeepSeek API](https://platform.deepseek.com)
 
 ---
 
-**Développé avec ❤️ pour la communauté DeepSeek Harness**
+Built this for my own use, figured others might find it helpful too.
