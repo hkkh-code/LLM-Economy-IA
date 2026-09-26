@@ -1,0 +1,46 @@
+{
+  "name": "harness-economy",
+  "version": "1.0.0",
+  "description": "AI Gateway System - Token Economy + AutoSwitch API for intelligent model usage optimization",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "ai-gateway/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "test:coverage": "pnpm -r run test:coverage",
+    "lint": "pnpm -r run lint",
+    "clean": "pnpm -r run clean"
+  },
+  "keywords": [
+    "ai",
+    "gateway",
+    "token-economy",
+    "auto-switch",
+    "api-optimization",
+    "deepseek",
+    "llm",
+    "rate-limit",
+    "retry",
+    "cache"
+  ],
+  "author": "DeepSeek AI Community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/votre-repo/Harness-Economy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/votre-repo/Harness-Economy/issues"
+  },
+  "homepage": "https://github.com/votre-repo/Harness-Economy#readme",
+  "engines": {
+    "node": ">=22.19.0",
+    "pnpm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

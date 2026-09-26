@@ -1,0 +1,42 @@
+{
+  "name": "@deepseek-ai/dsh-experimental-ai-gateway",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./lib/types/index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/types/index.js"
+    }
+  },
+  "dsh": {
+    "bundle": "../bundle.yml"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-token-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-context-optimizer": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-prompt-optimizer": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-cache-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-api-key-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-rate-limit-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-retry-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-provider-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-fallback-manager": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-usage-tracker": "workspace:*",
+    "@deepseek-ai/dsh-experimental-ai-gateway-logging-manager": "workspace:*",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^0.1.0"
+  }
+}
