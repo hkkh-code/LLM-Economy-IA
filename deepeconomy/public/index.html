@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepEconomy - LLM Economy IA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #e0e0e0; }
+    
+    /* Welcome Modal */
+    #welcomeModal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .modal-box {
+      background: #1a1a1a; padding: 40px; border-radius: 12px;
+      max-width: 600px; text-align: center; border: 1px solid #2a2a2a;
+    }
+    .modal-box h1 { color: #00d4aa; margin-bottom: 20px; }
+    .modal-box p { margin: 15px 0; line-height: 1.6; color: #b0b0b0; }
+    .modal-box a { color: #00d4aa; text-decoration: none; }
+    .modal-box a:hover { text-decoration: underline; }
+    .accept-btn {
+      background: #00d4aa; color: #000; border: none; padding: 15px 40px;
+      font-size: 18px; border-radius: 8px; cursor: pointer; margin-top: 25px;
+      font-weight: 600;
+    }
+    .accept-btn:hover { background: #00b894; }
+    
+    /* Main App */
+    #app { display: none; height: 100vh; }
+    .sidebar {
+      width: 250px; background: #111; padding: 20px;
+      border-right: 1px solid #222; overflow-y: auto;
+    }
+    .sidebar h2 { color: #00d4aa; margin-bottom: 20px; font-size: 18px; }
+    .provider-item {
+      padding: 12px; margin: 8px 0; background: #1a1a1a;
+      border-radius: 6px; cursor: pointer; border: 1px solid #2a2a2a;
+    }
+    .provider-item:hover { border-color: #00d4aa; }
+    .provider-item.active { border-color: #00d4aa; background: #0a2a20; }
+    .provider-name { font-weight: 600; }
+    .provider-models { font-size: 12px; color: #888; margin-top: 5px; }
+    
+    .main { flex: 1; display: flex; flex-direction: column; }
+    
+    /* Dashboard */
+    .dashboard {
+      padding: 30px; background: #0f0f0f; border-bottom: 1px solid #222;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;
+    }
+    .stat-card {
+      background: #1a1a1a; padding: 20px; border-radius: 8px;
+      border: 1px solid #2a2a2a; text-align: center;
+    }
+    .stat-value { font-size: 36px; color: #00d4aa; font-weight: bold; }
+    .stat-label { color: #888; margin-top: 5px; }
+    
+    /* Chat */
+    .chat-area { flex: 1; display: flex; flex-direction: column; }
+    .messages {
+      flex: 1; padding: 20px; overflow-y: auto;
+    }
+    .message {
+      margin: 10px 0; padding: 15px; border-radius: 8px;
+      max-width: 80%;
+    }
+    .message.user {
+      background: #1a3a2a; margin-left: auto; text-align: right;
+    }
+    .message.assistant {
+      background: #1a1a2a; margin-right: auto;
+    }
+    .chat-input {
+      padding: 20px; background: #111; border-top: 1px solid #222;
+    }
+    .chat-input textarea {
+      width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a;
+      color: #e0e0e0; padding: 15px; border-radius: 8px;
+      font-size: 14px; resize: none; height: 60px;
+    }
+    .chat-input textarea:focus { outline: none; border-color: #00d4aa; }
+    .send-btn {
+      background: #00d4aa; color: #000; border: none; padding: 12px 30px;
+      border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;
+    }
+    .send-btn:hover { background: #00b894; }
+    
+    /* API Keys Section */
+    .api-keys {
+      margin-top: 30px; padding-top: 20px; border-top: 1px solid #222;
+    }
+    .api-keys h3 { color: #00d4aa; margin-bottom: 15px; }
+    .key-input {
+      display: flex; gap: 10px; margin: 10px 0;
+    }
+    .key-input input {
+      flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a;
+      color: #e0e0e0; padding: 10px; border-radius: 6px;
+    }
+    .key-input button {
+      background: #00d4aa; color: #000; border: none; padding: 10px 20px;
+      border-radius: 6px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Welcome Modal -->
+  <div id="welcomeModal">
+    <div class="modal-box">
+      <h1>🚀 Bienvenue sur DeepEconomy</h1>
+      <h2 style="color: #888; font-weight: normal;">LLM Economy IA</h2>
+      <p>Avant tout message avec les IA, je vous invite à voir le dashboard<br>
+      et suivre le tuto YouTube sur la chaîne :</p>
+      <p><a href="https://www.youtube.com/@hkkh-code/" target="_blank">👉 https://www.youtube.com/@hkkh-code/</a></p>
+      <p>👇 Allez vous abonner svp 🙏🥀</p>
+      <p style="margin-top: 25px; font-size: 13px; color: #666;">
+        En utilisant les modèles, vous acceptez leurs termes et conditions.<br>
+        DeepSeek, Groq, Google AI, Cohere, Anthropic, Mistral, Together AI
+      </p>
+      <button class="accept-btn" onclick="acceptTerms()">✓ Accepter</button>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app">
+    <div style="display: flex; height: 100%;">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>🤖 Providers</h2>
+        <div id="providersList"></div>
+        
+        <div class="api-keys">
+          <h3>🔑 API Keys</h3>
+          <div id="apiKeysForm"></div>
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <div class="main">
+        <!-- Dashboard Stats -->
+        <div class="dashboard">
+          <h2 style="color: #00d4aa;">📊 Dashboard</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="tokensUsed">0</div>
+              <div class="stat-label">Tokens Utilisés</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="tokensSaved">0</div>
+              <div class="stat-label">Tokens Économisés</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="savings">0%</div>
+              <div class="stat-label">Économies</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="chat-area">
+          <div class="messages" id="messages">
+            <div class="message assistant">
+              👋 Bienvenue ! Je suis DeepEconomy, votre assistant IA économique.<br>
+              Sélectionnez un provider à gauche et commencez à discuter !
+            </div>
+          </div>
+          <div class="chat-input">
+            <textarea id="userInput" placeholder="Écrivez votre message..."></textarea>
+            <button class="send-btn" onclick="sendMessage()">Envoyer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let providers = [];
+    let selectedProvider = null;
+    let apiKeys = {};
+
+    async function acceptTerms() {
+      document.getElementById('welcomeModal').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      await loadProviders();
+      await loadStats();
+    }
+
+    async function loadProviders() {
+      const res = await fetch('/api/providers');
+      providers = await res.json();
+      renderProviders();
+      renderApiKeysForm();
+    }
+
+    function renderProviders() {
+      const list = document.getElementById('providersList');
+      list.innerHTML = providers.map(p => `
+        <div class="provider-item ${selectedProvider === p.id ? 'active' : ''}" 
+             onclick="selectProvider('${p.id}')">
+          <div class="provider-name">${p.name} ${p.free ? '✓' : ''}</div>
+          <div class="provider-models">${p.models.join(', ')}</div>
+        </div>
+      `).join('');
+    }
+
+    function selectProvider(id) {
+      selectedProvider = id;
+      renderProviders();
+    }
+
+    function renderApiKeysForm() {
+      const form = document.getElementById('apiKeysForm');
+      form.innerHTML = providers.map(p => `
+        <div class="key-input">
+          <input type="password" id="key-${p.id}" placeholder="${p.name} API Key">
+          <button onclick="saveKey('${p.id}')">Save</button>
+        </div>
+      `).join('');
+    }
+
+    async function saveKey(provider) {
+      const input = document.getElementById(`key-${provider}`);
+      const key = input.value;
+      if (!key) return;
+      
+      await fetch('/api/keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, key })
+      });
+      
+      apiKeys[provider] = key;
+      input.value = '';
+      input.placeholder = '✓ Saved';
+    }
+
+    async function loadStats() {
+      const res = await fetch('/api/stats');
+      const stats = await res.json();
+      
+      document.getElementById('tokensUsed').textContent = stats.tokens.used;
+      document.getElementById('tokensSaved').textContent = stats.tokens.saved;
+      document.getElementById('savings').textContent = stats.savings + '%';
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (!message) return;
+      
+      // Add user message
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML += `<div class="message user">${message}</div>`;
+      input.value = '';
+      
+      // Send to API
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, provider: selectedProvider })
+      });
+      
+      const data = await res.json();
+      
+      // Add assistant message
+      messagesDiv.innerHTML += `
+        <div class="message assistant">
+          ${data.message}<br>
+          <small style="color: #666;">Provider: ${data.provider} | Tokens: ${data.tokens.total}</small>
+        </div>
+      `;
+      
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      
+      // Update stats
+      await loadStats();
+    }
+
+    // Enter key to send
+    document.getElementById('userInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
